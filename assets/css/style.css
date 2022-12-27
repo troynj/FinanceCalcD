@@ -1,0 +1,31 @@
+:root {
+    --main: #cfc9b5;
+    --second: rgb(173, 168, 150);
+    --accent: rgb(71, 56, 48);
+    --contrast: #000000;
+}
+body {
+    
+    background-color: var(--main);
+    color: var(--contrast);
+    justify-content: center;
+}
+
+section {
+    width: fit-content;
+    align-items: center;
+    padding: 20px;
+ text-align: center;
+}
+
+input {
+    width: 96%;
+}
+section button {
+    width: 100%;
+}
+button:hover {
+  background-color: var(--second);
+}
+
+
