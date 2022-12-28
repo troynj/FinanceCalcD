@@ -36,20 +36,25 @@ var tableDescriptionEL = document.getElementById("table_description");
 var investmentListEL = document.getElementById("investment");
 var accountTotalListEl = document.getElementById("account_total");
 
-document.getElementById("calculate").addEventListener("click", gameFlow);
-document.getElementById("reset").addEventListener("click", resetTable);
-document.getElementById("edit").addEventListener("click", editEntry);
+document.getElementById("calculate").addEventListener("click", calculate);
+document.getElementById("reset").addEventListener("click", resetAll);
 
-function gameFlow(event) {
-  event.preventDefault();
-  //   var accTotalEl = document.getElementById("account_total");
-  //   var invEl = document.getElementById("investment");
-  resetTable();
+
+// function gameFlow(event) {
+//   event.preventDefault();
+//   //   var accTotalEl = document.getElementById("account_total");
+//   //   var invEl = document.getElementById("investment");
+
+//   //console.log(inputFieldObj)
+
+// }
+
+function calculate() {
   checkUserInput();
-  //console.log(inputFieldObj)
+
   for (var i = 0; i < inputFieldObj.numYrs; i++) {
     populateObj(i);
-    createTable(i);
+    addEntry(i);
   }
 }
 
@@ -80,7 +85,10 @@ function populateObj(i) {
   //   var initInv = parseInt(initInvestmentEl.value);
   //   var yrInv = parseInt(yearlyInvestmentEl.value);
   //   var int = parseInt(interestEl.value);
-
+  // console.log(inputFieldObj.initInv);
+  // console.log(inputFieldObj.yrInv);
+  // console.log(inputFieldObj.int);
+  //console.log(accountObj);
   if (i == 0) {
     accountObj.investment.push(inputFieldObj.initInv);
   } else {
@@ -110,33 +118,92 @@ function populateObj(i) {
   }
 }
 
-function createTable(i) {
-  //   console.log(i);
+function setTable() {
+    var trElHead = document.createElement("tr");
+    trElHead.setAttribute("id", "table_head");
+    document.getElementById("table").append(trElHead);
+ 
+    var thEl1 = document.createElement("th");
+    var thEl2 = document.createElement("th");
+    var thEl3 = document.createElement("th");
+    thEl1.textContent = "Years";
+    thEl2.textContent = "Investment";
+    thEl3.textContent = "Account Total";
+     trElHead.append(thEl1);
+     trElHead.append(thEl2);
+     trElHead.append(thEl3);
+}
+
+function addEntry(i) {
+     console.log(i);
+     console.log(typeof i);
   //   console.log(accountObj.investment[i])
   //   console.log(typeof accountObj.investment[i])
   //   console.log(accountObj.investment[i].toFixed(2))
 
-  var invLiEl = document.createElement("li");
-  invLiEl.textContent = accountObj.investment[i].toFixed(2);
-  document.getElementById("investment").append(invLiEl);
+  //   document.getElementById("table").innerHTML +=
+  //     '<tr><td>${i}</td><td>${accountObj.investment[i].toFixed(2)}</td><td>${accountObj.accountTotal[i].toFixed(2)}</td><td class="edit">Edit</td></tr>';
+  if(i === 0) {
+    console.log("entered thing")
+   //add table head
+setTable();
 
-  var totalLiEl = document.createElement("li");
-  totalLiEl.textContent = accountObj.accountTotal[i].toFixed(2);
-  document.getElementById("account_total").append(totalLiEl);
+  }
+
+  //add table row
+  var trEl = document.createElement("tr");
+  trEl.setAttribute("id", "row_" + (i + 1));
+  (i%2 == 0) && trEl.setAttribute("style", "background-color:#00000033");
+  document.getElementById("table").append(trEl);
+  //add data to row
+  var yearsTdEl = document.createElement("td");
+  yearsTdEl.textContent = i + 1;
+  trEl.append(yearsTdEl);
+
+  var investmentTdEl = document.createElement("td");
+  investmentTdEl.setAttribute("id", "investment_" + i);
+  investmentTdEl.textContent = accountObj.investment[i].toFixed(2);
+  trEl.append(investmentTdEl);
+
+  var accountTotalTdEl = document.createElement("td");
+  accountTotalTdEl.setAttribute("id", "accountTotal_" + i);
+  accountTotalTdEl.textContent = accountObj.accountTotal[i].toFixed(2);
+  trEl.append(accountTotalTdEl);
+
+  var editBtn = document.createElement("button");
+  editBtn.setAttribute("id", i);
+  editBtn.textContent = "Edit Entry"
+  editBtn.addEventListener("click", editEntry, {once : true});
+  trEl.append(editBtn);
 }
+
+function resetAll() {
+    resetTable();
+    resetObject();
+  }
 
 function resetTable() {
-  var accTotalEl = document.getElementById("account_total");
-  var invEl = document.getElementById("investment");
-  while (accTotalEl.firstChild) {
-    accTotalEl.removeChild(accTotalEl.firstChild);
+  var tableEl = document.getElementById("table");
+  while (tableEl.firstChild) {
+    tableEl.removeChild(tableEl.firstChild);
   }
-  while (invEl.firstChild) {
-    invEl.removeChild(invEl.firstChild);
-  }
+
 }
 
-// function editEntry() {
+function resetObject() {
+  accountObj.yearlyInterest = 0;
+  accountObj.investment = [];
+  accountObj.accountTotal = [];
+
+  inputFieldObj.initInv = 0;
+  inputFieldObj.yrInv = 0;
+  inputFieldObj.int = 0;
+  inputFieldObj.numYrs = 0;
+}
+
+//  function editMultipleEntries(editInvEl) {
+//  }
+ //function editEntry() {
 //   var userInputIndex = prompt(
 //     "Enter the number of the entry you would like to change:"
 //   );
@@ -149,4 +216,28 @@ function resetTable() {
 //   for (var i = 0; i < accountObj.investment.length; i++) {
 //     createTable(i);
 //   }
-// }
+ //}
+
+function editEntry(event) {
+    // console.log("entered openEdit")
+    var editBtn = event.target;
+var index = editBtn.getAttribute("id")
+editBtn.textContent = "Set Entry";
+editBtn.addEventListener("click", function() {
+
+    accountObj.investment[index] = parseInt(editInvEl.value)
+
+editBtn.textContent = "Edit Entry"
+editBtn.addEventListener("click", editEntry, {once: true})
+resetTable()
+calculate()
+}, {once: true})
+
+var invEl = document.getElementById("investment_" + index)
+var editInvEl = document.createElement("input")
+//editInvEl.setAttribute("placeholder", "Enter Value")
+
+invEl.replaceWith(editInvEl)
+
+
+}
