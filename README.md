@@ -1,4 +1,4 @@
 # FinanceCalcD
 
-##Deployed Link:
+# Deployed Link:
 https://troynj.github.io/FinanceCalcD/
